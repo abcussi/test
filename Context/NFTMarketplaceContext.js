@@ -61,20 +61,24 @@ export const NFTMarketplaceProvider = ({ children }) => {
     //CHECK IF WALLET IS CONNECTED
     const checkIfWalletIsConnected = async () => {
         try {
-            if(!window.ethereum) return setOpenError(true), setError("Please install Metamask");
-                
+            if (!window.ethereum) {
+                setError("Please install Metamask");
+                setOpenError(true);
+                return;
+            }
 
             const accounts = await window.ethereum.request({
                 method: "eth_accounts",
             });
 
-            if(accounts.length) {
+            if (accounts.length > 0) {
                 setCurrentAccount(accounts[0]);
             } else {
                 setError("No account found");
                 setOpenError(true)
             }
         } catch (error) {
+            console.log("Error =>", error);
             setError("Something went wrong while connecting wallet");
             setOpenError(true)
         }
@@ -87,19 +91,25 @@ export const NFTMarketplaceProvider = ({ children }) => {
     //CONNECT WALLET
     const connectWallet = async () => {
         try {
-
-            if(!window.ethereum) return (
-               setOpenError(true), setError("Please install Metamask")
-            )
+            if (!window.ethereum) {
+                setError("Please install Metamask");
+                setOpenError(true);
+                return;
+            }
 
             const accounts = await window.ethereum.request({
                 method: "eth_requestAccounts",
             });
 
-            setCurrentAccount(accounts[0]);
-           // window.location.reload();
-
+            if (accounts.length > 0) {
+                setCurrentAccount(accounts[0]);
+                // window.location.reload();
+            } else {
+                setError("No Accounts");
+                setOpenError(true);
+            }
         } catch (error) {
+            console.log("Error =>", error);
             setError("Error while connection to wallet!");
             setOpenError(true);
         }
